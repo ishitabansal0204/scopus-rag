@@ -1,0 +1,14 @@
+[
+  {"question": "How did the amended German Maternity Protection Act affect female physicians' careers?", "expected_eids": ["2-s2.0-85151856764", "2-s2.0-85213038716"]},
+  {"question": "Does extending maternity leave improve child health outcomes in Zimbabwe?", "expected_eids": ["2-s2.0-85117237494"]},
+  {"question": "Is there a link between paid maternity leave and exclusive breastfeeding among working mothers in Delhi?", "expected_eids": ["2-s2.0-85117955404", "2-s2.0-105015412335"]},
+  {"question": "How aware are working women in Himachal Pradesh of the Maternity Benefits Act?", "expected_eids": ["2-s2.0-85089280577"]},
+  {"question": "What is the effect of the Maternity Benefit Amendment Act 2017 on unorganized sector construction workers?", "expected_eids": ["2-s2.0-85083106136", "2-s2.0-85037726265"]},
+  {"question": "What is the feminist critique of India's Maternity Benefit Act regarding paternity leave?", "expected_eids": ["2-s2.0-85086341548"]},
+  {"question": "Which vascular surgery procedures can pregnant surgeons perform safely?", "expected_eids": ["2-s2.0-105025374084"]},
+  {"question": "How does removing a newborn from its mother at birth affect midwives in Australia?", "expected_eids": ["2-s2.0-84923368994", "2-s2.0-85027528117"]},
+  {"question": "What are the workplace lactation support policies in US states and universities?", "expected_eids": ["2-s2.0-84883675861"]},
+  {"question": "Why did legislators want to limit maternity benefits to two deliveries in India?", "expected_eids": ["2-s2.0-105034117613"]},
+  {"question": "How do employers and employees in India perceive extended maternity leave?", "expected_eids": ["2-s2.0-105002217203"]},
+  {"question": "How do Maryland hospitals screen and test for drug use during delivery?", "expected_eids": ["2-s2.0-84906263932"]}
+]
