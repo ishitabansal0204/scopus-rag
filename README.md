@@ -87,6 +87,8 @@ To test what full text adds, detail questions also have an **Evidence@5** score:
 
 ## Example queries
 
+See [docs/example_answers.md](docs/example_answers.md) for questions and the system's answers, with sources.
+
 _Add 3 to 4 example questions with screenshots of the answers in `docs/`, for example `![demo](docs/screenshot1.png)`._
 
 ## Limitations
