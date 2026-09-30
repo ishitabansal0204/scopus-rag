@@ -82,8 +82,8 @@ To test what full text adds, detail questions also have an **Evidence@5** score:
 
 | Setup | Evidence@5 |
 |---|---|
-| Abstract only | _fill in from evaluate.py_ |
-| Abstract + OA full text | _fill in from evaluate.py_ |
+| Abstract only | 0/3 |
+| Abstract + OA full text | 3/3 |
 
 ## Example queries
 
