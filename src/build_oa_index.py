@@ -1,9 +1,14 @@
 """
 build_oa_index.py
-Builds a Chroma vector index from a Scopus export.
+Builds a vector index from a Scopus export (NumPy store, no vector database needed).
 
   - Every paper: 1 abstract chunk   (skip non-OA ones with --oa-only)
   - Open Access papers with a DOI: full-text chunks via the Unpaywall API
+
+Output (all git-ignored under data/):
+  data/chunks.jsonl            every chunk with its metadata
+  data/index/embeddings.npy    one normalised embedding per chunk
+  data/index/records.json      chunk text + metadata, same order as embeddings.npy
 
 Usage:
   set UNPAYWALL_EMAIL=you@college.edu        (Windows)
@@ -12,7 +17,7 @@ Usage:
   python build_oa_index.py --input data/scopus.csv --oa-only
 
 Install:
-  pip install pandas requests pymupdf sentence-transformers chromadb openpyxl
+  pip install pandas requests pymupdf sentence-transformers openpyxl python-dotenv
 """
 import argparse
 import json
@@ -22,6 +27,7 @@ import time
 from pathlib import Path
 
 import fitz  # pymupdf
+import numpy as np
 import pandas as pd
 import requests
 from dotenv import load_dotenv
@@ -30,9 +36,8 @@ load_dotenv()
 
 FULLTEXT_DIR = Path("data/fulltext")
 CHUNKS_FILE = Path("data/chunks.jsonl")
-CHROMA_PATH = "chroma_db"
-COLLECTION = "papers"
-EMBED_MODEL = "all-MiniLM-L6-v2"  # use paraphrase-multilingual-MiniLM-L12-v2 for German text
+INDEX_DIR = Path(os.getenv("INDEX_DIR", "data/index"))
+EMBED_MODEL = os.getenv("EMBED_MODEL", "all-MiniLM-L6-v2")  # must match rag.py; use paraphrase-multilingual-MiniLM-L12-v2 for German text
 
 
 # ---------- 1. load + filter ----------
@@ -159,28 +164,20 @@ def build_records(df, email, oa_only):
 
 # ---------- 5. embed + store ----------
 def build_index(records):
-    import chromadb
     from sentence_transformers import SentenceTransformer
 
     model = SentenceTransformer(EMBED_MODEL)
-    client = chromadb.PersistentClient(path=CHROMA_PATH)
-    try:
-        client.delete_collection(COLLECTION)
-    except Exception:
-        pass
-    col = client.create_collection(COLLECTION)
-
-    B = 64
-    for s in range(0, len(records), B):
-        batch = records[s:s + B]
-        embs = model.encode([r["text"] for r in batch], show_progress_bar=False)
-        col.add(
-            ids=[r["id"] for r in batch],
-            embeddings=embs.tolist(),
-            documents=[r["text"] for r in batch],
-            metadatas=[r["metadata"] for r in batch],
-        )
-        print(f"indexed {min(s + B, len(records))}/{len(records)}")
+    embs = model.encode(
+        [r["text"] for r in records],
+        batch_size=64,
+        normalize_embeddings=True,  # unit vectors -> dot product = cosine similarity
+        show_progress_bar=False,
+    )
+    INDEX_DIR.mkdir(parents=True, exist_ok=True)
+    np.save(INDEX_DIR / "embeddings.npy", np.asarray(embs, dtype="float32"))
+    with open(INDEX_DIR / "records.json", "w", encoding="utf-8") as f:
+        json.dump(records, f, ensure_ascii=False)
+    print(f"indexed {len(records)} chunks")
 
 
 def main():
@@ -205,7 +202,7 @@ def main():
     n_ft = sum(r["metadata"]["chunk_type"] == "fulltext" for r in records)
     print(f"{len(records)} chunks total ({n_ft} full-text, {len(records) - n_ft} abstract)")
     build_index(records)
-    print("Done. Index saved to", CHROMA_PATH)
+    print("Done. Index saved to", INDEX_DIR)
 
 
 if __name__ == "__main__":

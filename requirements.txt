@@ -3,7 +3,6 @@ openpyxl
 requests
 pymupdf
 sentence-transformers
-chromadb
 streamlit
 python-dotenv
 ollama
